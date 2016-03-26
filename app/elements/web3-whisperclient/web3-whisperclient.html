@@ -36,6 +36,7 @@
 
       .paperinput {
         @apply(--layout-flex);
+        color: white;
       }
     </style>
     <style include="iron-flex iron-flex-alignment"></style> 
@@ -43,6 +44,11 @@
     <paper-drawer-panel force-narrow>
       <paper-header-panel drawer>
         <paper-toolbar>Menu</paper-toolbar>
+        <iron-localstorage 
+      id="nickstorage" 
+      name="nick"
+      value="{{nickname}}" 
+      ></iron-localstorage>
           <paper-input value="{{nickname}}" label="your nickname"></paper-input>
           <paper-button on-click="_changenick" raised>change nickname</paper-button>
               <paper-input value="{{topic}}" label="the topic"></paper-input>

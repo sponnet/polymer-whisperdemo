@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 
 <dom-module id="web3-whisperclient">
+
   <template>
     <style include="shared-styles">
       :host {
@@ -12,25 +13,67 @@
       input {
         @apply(--paper-font-body2);
       }
+      paper-toolbar {
+        height: 8vh;
+        background-color: grey;
+      }
+
+      .chatcontainer {
+        @apply(--layout-vertical);
+        height: 92vh;
+        background-color: #333333;
+        color: white;
+      }
+      .messages {
+        @apply(--layout-flex);
+        padding: 10px;
+      }
+
+      .messageinput {
+        @apply(--layout-horizontal);
+        padding: 10px;
+      }
+
+      .paperinput {
+        @apply(--layout-flex);
+      }
     </style>
+    <style include="iron-flex iron-flex-alignment"></style> 
 
-    <h2 class="page-title">The Ultimate A-Labs Whisper Chatbox</h2>
-    <paper-input value="{{nickname}}" label="your nickname"></paper-input>
-    <paper-button on-click="_changenick" raised>change nickname</paper-button>
+    <paper-drawer-panel force-narrow>
+      <paper-header-panel drawer>
+        <paper-toolbar>Menu</paper-toolbar>
+          <paper-input value="{{nickname}}" label="your nickname"></paper-input>
+          <paper-button on-click="_changenick" raised>change nickname</paper-button>
+              <paper-input value="{{topic}}" label="the topic"></paper-input>
 
-    <paper-input value="{{topic}}" label="the topic"></paper-input>
-
-    <template is="dom-repeat" items="{{chatbox}}">
-      <div>
+      </paper-header-panel>
+      <paper-header-panel main>
+        <paper-toolbar>
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <div class="flex">{{topic}}</div>
+        </paper-toolbar>
+        <div class="chatcontainer">
+        <div class="messages">
+        <template is="dom-repeat" items="{{chatbox}}">
+        <div>
         <span> <b>{{item.nick}}</b>
           : {{item.input}}
         </span>
       </div>
     </template>
-
-    <paper-input value="{{chatinput}}" label="Type something here"></paper-input>
+  </div>
+      <div class="messageinput">
+        <paper-input class="paperinput" value="{{chatinput}}" label="Type something here" on-keydown="checkForEnter"></paper-input>
     <paper-button on-click="_sendmessage" raised>send</paper-button>
+  </div>
+  </div>
+      </paper-header-panel>
+    </paper-drawer-panel>
+
   </template>
+
+
 
   <script>
     (function() {
@@ -38,6 +81,7 @@
 
       Polymer({
         is: 'web3-whisperclient',
+
 
         properties: {
           web3: {
@@ -101,6 +145,14 @@
             this.chatinput = '';
           }
 
+        },
+
+        checkForEnter: function (e) {
+            // check if 'enter' was pressed
+            if (e.keyCode === 13) {
+                // enter pressed!
+                this._sendmessage();
+            }
         },
 
         whisperpost: function(nick, input) {

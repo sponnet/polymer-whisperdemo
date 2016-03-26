@@ -63,19 +63,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
 
+  <web3-wallet id="web3wallet" password="test" web3="{{web3}}" host="http://109.123.70.141:8545" account={{account}} keystore="{{keystore}}" walletname="whisperchat"></web3-wallet>
 
         <!-- Main Content -->
         <div class="content">
           
-              <paper-material elevation="1">
                
 
 
-    <web3-wallet id="web3wallet" password="test" web3="{{web3}}" host="http://109.123.70.141:8545" account={{account}} keystore="{{keystore}}"></web3-wallet>
+  
+    <web3-whisperclient web3="{{web3}}"></web3-whisperclient>
 
-                <web3-whisperclient web3="{{web3}}"></web3-whisperclient>
-
-              </paper-material>
 
         
         </div>

@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="web3-whisperclient">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+    </style>
+
+    <h2 class="page-title">The Ultimate A-Labs Whisper Chatbox</h2>
+    <paper-input value="{{nickname}}" label="your nickname"></paper-input>
+    <paper-button on-click="_changenick" raised>change nickname</paper-button>
+
+    <paper-input value="{{topic}}" label="the topic"></paper-input>
+
+    <template is="dom-repeat" items="{{chatbox}}">
+      <div>
+        <span> <b>{{item.nick}}</b>
+          : {{item.input}}
+        </span>
+      </div>
+    </template>
+
+    <paper-input value="{{chatinput}}" label="Type something here"></paper-input>
+    <paper-button on-click="_sendmessage" raised>send</paper-button>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'web3-whisperclient',
+
+        properties: {
+          web3: {
+            type: Object,
+            observer: '_web3'
+          },
+          chatinput: {
+            type: String,
+            //observer: '_chatinput'
+          },
+          chatbox: {
+            type: Array,
+            value: [],
+            notify: true
+          },
+          nickname: {
+            type: String,
+            value: "Anonymous Coward " + Math.floor(100 + Math.random() * 999)
+          },
+          topic: {
+            type: String,
+            value: "De A-labs fluisteraars"
+          }
+        },
+
+        _web3: function() {
+
+          var self = this;
+          console.log('web3 started');
+
+          this.identity = this.web3.shh.newIdentity();
+
+          var filter = this.web3.shh.filter({
+            "topics": [this.web3.fromAscii(this.topic)],
+          });
+
+          filter.watch(function(error, result) {
+            if (!error)
+              self.push('chatbox', JSON.parse(self.web3.toAscii(result.payload)));
+          });
+
+          this.whisperpost('chatbot', this.nickname + ' has joined the room');
+
+        },
+        attached: function() {
+          this.oldnick = this.nickname;
+        },
+
+        _changenick: function() {
+          if (this.oldnick) {
+            this.whisperpost('chatbot', this.oldnick + ' is now known as ' + this.nickname);
+          }
+          this.oldnick = this.nickname;
+        },
+
+        _sendmessage: function() {
+
+          var postresult = this.whisperpost(this.nickname, this.chatinput);
+
+          if (postresult) {
+            this.chatinput = '';
+          }
+
+        },
+
+        whisperpost: function(nick, input) {
+          return this.web3.shh.post({
+            "from": this.identity,
+            "topics": [this.web3.fromAscii(this.topic)],
+            "payload": this.web3.fromAscii(JSON.stringify({
+              nick: nick,
+              input: input
+            })),
+            "ttl": 100,
+            "priority": 1000
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>

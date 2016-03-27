@@ -24,6 +24,8 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var ensureFiles = require('./tasks/ensure-files.js');
+var bb = require('bitballoon');
+var env = require('gulp-env');
 
 // var ghPages = require('gulp-gh-pages');
 
@@ -320,6 +322,37 @@ gulp.task('deploy-gh-pages', function() {
       branch: 'gh-pages'
     }), $.ghPages()));
 });
+
+// deploy to bitballoon
+gulp.task('deploy', ['default'], function() {
+
+  try {
+    env({
+      file: 'env.json',
+    });
+  } catch (e) {
+    //    console.log('to deploy create a env.json file (see env.json.sample)');
+    throw (new Error('Please create a env.json file (see env.json.sample)'));
+  }
+
+  if (!process.env.BB_ACCESSTOKEN) {
+    throw (new Error('Please fill in your BB_ACCESSTOKEN in the env.json file.'));
+  }
+
+  console.log('Deploying to Bitballoon (', process.env.BB_SITEID, ')');
+
+  bb.deploy({
+    access_token: process.env.BB_ACCESSTOKEN,
+    site_id: process.env.BB_SITEID,
+    dir: "dist"
+  }, function(err, deploy) {
+    if (err) {
+      throw (err)
+    }
+    console.log('Deploying to ',deploy.url);
+  });
+});
+
 
 // Load tasks for web-component-tester
 // Adds tasks for `gulp test:local` and `gulp test:remote`

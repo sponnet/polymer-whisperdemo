@@ -32,6 +32,7 @@
       .messageinput {
         @apply(--layout-horizontal);
         padding: 10px;
+        border-top: 1px solid white;
       }
 
       .paperinput {
@@ -70,8 +71,8 @@
     </template>
   </div>
       <div class="messageinput">
-        <paper-input class="paperinput" value="{{chatinput}}" label="Type something here" on-keydown="checkForEnter"></paper-input>
-    <paper-button on-click="_sendmessage" raised>send</paper-button>
+        <paper-input autofocus id="paperinput" class="paperinput" value="{{chatinput}}" label="" on-keydown="checkForEnter"></paper-input>
+    <paper-icon-button icon="icons:send" on-click="_sendmessage">send</paper-icon-button>
   </div>
   </div>
       </paper-header-panel>
@@ -111,6 +112,9 @@
             type: String,
             value: "De A-labs fluisteraars"
           }
+        },
+
+        ready: function(){
         },
 
         _web3: function() {

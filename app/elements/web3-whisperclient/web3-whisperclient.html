@@ -14,30 +14,45 @@
       @apply(--paper-font-body2);
     }
     paper-toolbar {
-      height: 8vh;
       background-color: grey;
     }
 
     .chatcontainer {
       @apply(--layout-vertical);
-      height: 92vh;
       background-color: #333333;
       color: white;
     }
+
     .messages {
       @apply(--layout-flex);
       padding: 10px;
+      background-color: #333;
+      height: 80vh;
     }
 
     .messageinput {
       @apply(--layout-horizontal);
-      padding: 10px;
-      border-top: 1px solid white;
+      background-color: grey;
+      height: 20vh;
     }
 
     .paperinput {
       @apply(--layout-flex);
       color: white;
+      background-color: #777;
+      border-radius: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin: 10px;
+    }
+
+    .sendbutton {
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+
+    #paperinput {
+      margin-top: -15px;
     }
   </style>
   <style include="iron-flex iron-flex-alignment"></style> 
@@ -54,13 +69,13 @@
       <paper-button on-click="_changenick" raised>change nickname</paper-button>
       <paper-input value="{{topic}}" label="the topic"></paper-input>
     </paper-header-panel>
-    <paper-header-panel main>
+
+    <paper-scroll-header-panel fixed main class="chatcontainer">
       <paper-toolbar>
         <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
         <div class="flex">{{topic}}</div>
       </paper-toolbar>
-      <div class="chatcontainer">
-        <div class="messages">
+      <div class="messages">
           <template is="dom-repeat" items="{{chatbox}}">
             <div>
               <span> <b>{{item.nick}}</b>
@@ -68,13 +83,14 @@
               </span>
             </div>
           </template>
-        </div>
-        <div class="messageinput">
-          <paper-input autofocus id="paperinput" class="paperinput" value="{{chatinput}}" label="" on-keydown="checkForEnter"></paper-input>
-          <paper-icon-button icon="icons:send" on-click="_sendmessage">send</paper-icon-button>
-        </div>
       </div>
-    </paper-header-panel>
+    </paper-scroll-header-panel>
+    <div class="messageinput">
+      <div class="paperinput">
+        <paper-input autofocus id="paperinput" value="{{chatinput}}" label="Type a message" on-keydown="checkForEnter"></paper-input>
+      </div>
+      <paper-icon-button class="sendbutton" icon="icons:send" on-click="_sendmessage"></paper-icon-button>
+    </div>
   </paper-drawer-panel>
 </template>
 
@@ -147,11 +163,15 @@
 
         _sendmessage: function() {
 
+          if(this.chatinput != ''){
+
           var postresult = this.whisperpost(this.nickname, this.chatinput);
 
           if (postresult) {
             this.chatinput = '';
           }
+
+        }
 
         },
 

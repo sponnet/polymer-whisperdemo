@@ -27,13 +27,15 @@
       @apply(--layout-flex);
       padding: 10px;
       background-color: #333;
-      height: 80vh;
+      overflow-y: scroll;
     }
 
     .messageinput {
       @apply(--layout-horizontal);
+      @apply(--layout-end);
       background-color: grey;
-      height: 20vh;
+      height: 70px;
+      width: 100%;
     }
 
     .paperinput {
@@ -47,12 +49,16 @@
     }
 
     .sendbutton {
-      margin-top: 10px;
       margin-right: 10px;
     }
 
     #paperinput {
       margin-top: -15px;
+    }
+
+    .nick {
+      font-weight: bolder;
+      color: #aaa;
     }
   </style>
   <style include="iron-flex iron-flex-alignment"></style> 
@@ -70,27 +76,32 @@
       <paper-input value="{{topic}}" label="the topic"></paper-input>
     </paper-header-panel>
 
-    <paper-scroll-header-panel fixed main class="chatcontainer">
+    <div main class="chatcontainer">
+
       <paper-toolbar>
-        <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-        <div class="flex">{{topic}}</div>
+      <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+      <div>{{topic}}</div>
       </paper-toolbar>
-      <div class="messages">
-          <template is="dom-repeat" items="{{chatbox}}">
-            <div>
-              <span> <b>{{item.nick}}</b>
-            : {{item.input}}
-              </span>
-            </div>
-          </template>
+
+      <div class="messages" id="msgbox">
+     
+        <template is="dom-repeat" items="{{chatbox}}">
+          <div>
+            <span> <span class="nick">{{item.nick}}</span>
+          {{item.input}}
+            </span>
+          </div>
+        </template>
       </div>
-    </paper-scroll-header-panel>
+
     <div class="messageinput">
-      <div class="paperinput">
-        <paper-input autofocus id="paperinput" value="{{chatinput}}" label="Type a message" on-keydown="checkForEnter"></paper-input>
-      </div>
-      <paper-icon-button class="sendbutton" icon="icons:send" on-click="_sendmessage"></paper-icon-button>
+        <div class="paperinput">
+          <paper-input autofocus id="paperinput" value="{{chatinput}}" label="Type a message" on-keydown="checkForEnter"></paper-input>
+        </div>
     </div>
+
+  </div>
+    
   </paper-drawer-panel>
 </template>
 
@@ -136,6 +147,7 @@
           var self = this;
           console.log('web3 started');
 
+
           this.identity = this.web3.shh.newIdentity();
 
           var filter = this.web3.shh.filter({
@@ -145,13 +157,23 @@
           filter.watch(function(error, result) {
             if (!error)
               self.push('chatbox', JSON.parse(self.web3.toAscii(result.payload)));
+              self.scrollTop();
           });
 
           this.whisperpost('chatbot', this.nickname + ' has joined the room');
 
+
+
         },
         attached: function() {
           this.oldnick = this.nickname;
+          setInterval(this.scrollTop, 500);
+        },
+
+        scrollTop: function(){
+          var elem = document.getElementById('msgbox');
+          elem.scrollTop = elem.scrollHeight;
+          console.log("Scrolling to top");
         },
 
         _changenick: function() {

@@ -82,8 +82,15 @@
       name="nick"
       value="{{nickname}}" 
       ></iron-localstorage>
+      <iron-localstorage 
+      id="avatarstorage" 
+      name="avatar"
+      value="{{ipfsavatar}}" 
+      ></iron-localstorage>
       <paper-input value="{{nickname}}" label="your nickname"></paper-input>
       <paper-button on-click="_changenick" raised>change nickname</paper-button>
+      <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+      <ipfs-upload id="ipfsupload" host="/ip4/109.123.70.141/tcp/5001" ipfs="{{ipfs}}" hash="{{ipfsavatar}}"></ipfs-upload>
       <paper-input value="{{topic}}" label="the topic"></paper-input>
     </div>
     </paper-header-panel>
@@ -100,7 +107,7 @@
         <template is="dom-repeat" items="{{chatbox}}">
           <div>
             <span>
-              <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+              <img class="avatar" src="//gateway.ipfs.io/ipfs/{{item.avatar}}" />
             </span> <span class="nick">{{item.nick}}</span>
           <span>{{item.input}}
             </span>
@@ -171,13 +178,18 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
             type: String,
             value: "De A-labs fluisteraars"
           },
-          avatar: {
-            type: String,
-            value: "QmNSXYrGmGtTd6FwsjyoicLVh4mzZCnnYSCb7GvQLw22Ec"
+          ipfsavatar: {
+            type: Object,
+            observer: '_ipfshash'
           }
         },
 
         ready: function(){
+        },
+
+        _ipfshash: function(){
+          console.log(this.avatar);
+          this.avatar = this.ipfsavatar.hash;
         },
 
         _web3: function() {

@@ -65,6 +65,7 @@
 
   <paper-drawer-panel force-narrow>
     <paper-header-panel drawer>
+    <x-notification autoshow title="{{notificationbody.nick}}" delay="1000" icon="https://avatars3.githubusercontent.com/u/2879379?v=3&s=460" timeout="6000" tag="tag"><span>{{notificationbody.input}}</span></x-notification>
       <paper-toolbar>Menu</paper-toolbar>
       <iron-localstorage 
       id="nickstorage" 
@@ -158,6 +159,8 @@
             if (!error)
               self.push('chatbox', JSON.parse(self.web3.toAscii(result.payload)));
               self.scrollTop();
+              self.notificationbody = JSON.parse(self.web3.toAscii(result.payload));
+              document.querySelector('x-notification').show();
           });
 
           this.whisperpost('chatbot', this.nickname + ' has joined the room');

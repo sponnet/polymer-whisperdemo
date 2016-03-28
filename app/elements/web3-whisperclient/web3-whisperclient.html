@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 
 <dom-module id="web3-whisperclient">
@@ -89,7 +90,7 @@
         <template is="dom-repeat" items="{{topics}}">
         <paper-icon-item topic="{{item.topic}}">
         <div class="avatar" item-icon>
-          <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+          <img class="avatar" src="//gateway.ipfs.io/ipfs/{{item.image}}" />
         </div>
         <span>{{item.topic}}</span>
         </paper-icon-item>
@@ -115,6 +116,11 @@
       </div>
       <paper-input value="{{topic}}" label="the topic"></paper-input>
       <x-notification autoshow title="{{notificationbody.nick}}" delay="1000" icon="https://avatars3.githubusercontent.com/u/2879379?v=3&s=460" timeout="6000" tag="tag"><span>{{notificationbody.input}}</span></x-notification>
+      <iron-ajax
+         url="http://api.icndb.com/jokes/random?firstName=The&lastName=Sponnet&escape=javascript"
+         handle-as="json"
+         id="ajaxquote"
+         on-response="handleResponse"></iron-ajax>
     </paper-header-panel>
 
     <div main class="chatcontainer">
@@ -265,6 +271,18 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
         attached: function() {
           this.oldnick = this.nickname;
           setInterval(this.scrollTop, 500);
+          setInterval(this.botPost.bind(this), 60000);
+        },
+
+        botPost: function(){
+          this.$.ajaxquote.generateRequest();
+        },
+
+        handleResponse: function(e){
+          console.log(e.detail.response.value.joke);
+          var quote = e.detail.response.value.joke;
+          // var author = e.detail.response.contents.quotes[0].author;
+          this.whisperpost('sponniebot', quote);
         },
 
         scrollTop: function(){

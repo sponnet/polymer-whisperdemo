@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
 
 <dom-module id="web3-whisperclient">
 
@@ -82,9 +85,14 @@
   <paper-drawer-panel force-narrow>
     <paper-header-panel drawer>
       <paper-toolbar>Menu</paper-toolbar>
-      <iron-selector attr-for-selection="topic" selected="{{menuselection}}">
+      <iron-selector attr-for-selected="topic" selected="{{currenttopic}}">
         <template is="dom-repeat" items="{{topics}}">
-        <paper-item topic="A-Labs">{{item.topic}}</paper-item>
+        <paper-icon-item topic="{{item.topic}}">
+        <div class="avatar" item-icon>
+          <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+        </div>
+        <span>{{item.topic}}</span>
+        </paper-icon-item>
       </template>
       </iron-selector>
        <iron-localstorage 
@@ -113,7 +121,7 @@
 
       <paper-toolbar>
       <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-      <div>#<span>{{menuselection}}</span></div>
+      <div>#<span>{{currenttopic}}</span></div>
       </paper-toolbar>
 
       <div class="messages" id="msgbox">

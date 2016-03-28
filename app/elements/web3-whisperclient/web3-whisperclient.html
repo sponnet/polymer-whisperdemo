@@ -60,11 +60,21 @@
       font-weight: bolder;
       color: #aaa;
     }
+    .drawerstuff {
+      background-color: black;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
   </style>
   <style include="iron-flex iron-flex-alignment"></style> 
 
   <paper-drawer-panel force-narrow>
     <paper-header-panel drawer>
+    <div class="drawerstuff">
     <x-notification autoshow title="{{notificationbody.nick}}" delay="1000" icon="https://avatars3.githubusercontent.com/u/2879379?v=3&s=460" timeout="6000" tag="tag"><span>{{notificationbody.input}}</span></x-notification>
       <paper-toolbar>Menu</paper-toolbar>
       <iron-localstorage 
@@ -75,6 +85,7 @@
       <paper-input value="{{nickname}}" label="your nickname"></paper-input>
       <paper-button on-click="_changenick" raised>change nickname</paper-button>
       <paper-input value="{{topic}}" label="the topic"></paper-input>
+    </div>
     </paper-header-panel>
 
     <div main class="chatcontainer">
@@ -88,8 +99,10 @@
      
         <template is="dom-repeat" items="{{chatbox}}">
           <div>
-            <span> <span class="nick">{{item.nick}}</span>
-          {{item.input}}
+            <span>
+              <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+            </span> <span class="nick">{{item.nick}}</span>
+          <span>{{item.input}}
             </span>
           </div>
         </template>
@@ -99,6 +112,7 @@
         <div class="paperinput">
           <paper-input autofocus id="paperinput" value="{{chatinput}}" label="Type a message" on-keydown="checkForEnter"></paper-input>
         </div>
+        <paper-icon-button icon="attachment" class="sendbutton"></paper-icon-button>
     </div>
 
   </div>
@@ -111,6 +125,25 @@
   <script>
     (function() {
       'use strict';
+
+      var activewindow;
+
+      function onBlur() {
+  document.body.className = 'blurred';
+  activewindow = false;
+};
+function onFocus(){
+  document.body.className = 'focused';
+  activewindow = true;
+};
+
+if (/*@cc_on!@*/false) { // check for Internet Explorer
+  document.onfocusin = onFocus;
+  document.onfocusout = onBlur;
+} else {
+  window.onfocus = onFocus;
+  window.onblur = onBlur;
+};
 
       Polymer({
         is: 'web3-whisperclient',
@@ -137,6 +170,10 @@
           topic: {
             type: String,
             value: "De A-labs fluisteraars"
+          },
+          avatar: {
+            type: String,
+            value: "QmNSXYrGmGtTd6FwsjyoicLVh4mzZCnnYSCb7GvQLw22Ec"
           }
         },
 
@@ -160,7 +197,9 @@
               self.push('chatbox', JSON.parse(self.web3.toAscii(result.payload)));
               self.scrollTop();
               self.notificationbody = JSON.parse(self.web3.toAscii(result.payload));
-              document.querySelector('x-notification').show();
+              if(activewindow){
+                document.querySelector('x-notification').show();
+              }
           });
 
           this.whisperpost('chatbot', this.nickname + ' has joined the room');
@@ -190,7 +229,7 @@
 
           if(this.chatinput != ''){
 
-          var postresult = this.whisperpost(this.nickname, this.chatinput);
+          var postresult = this.whisperpost(this.nickname, this.chatinput, this.avatar);
 
           if (postresult) {
             this.chatinput = '';
@@ -208,12 +247,13 @@
             }
         },
 
-        whisperpost: function(nick, input) {
+        whisperpost: function(nick, input, avatar) {
           return this.web3.shh.post({
             "from": this.identity,
             "topics": [this.web3.fromAscii(this.topic)],
             "payload": this.web3.fromAscii(JSON.stringify({
               nick: nick,
+              avatar: avatar,
               input: input
             })),
             "ttl": 100,

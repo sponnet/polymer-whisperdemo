@@ -69,15 +69,25 @@
       height: 30px;
       border-radius: 50%;
     }
+
+    .userzone {
+      width: 100%;
+      @apply(--layout-vertical);
+            @apply(--layout-center-justified);
+
+    }
   </style>
   <style include="iron-flex iron-flex-alignment"></style> 
 
   <paper-drawer-panel force-narrow>
     <paper-header-panel drawer>
-    <div class="drawerstuff">
-    <x-notification autoshow title="{{notificationbody.nick}}" delay="1000" icon="https://avatars3.githubusercontent.com/u/2879379?v=3&s=460" timeout="6000" tag="tag"><span>{{notificationbody.input}}</span></x-notification>
       <paper-toolbar>Menu</paper-toolbar>
-      <iron-localstorage 
+      <iron-selector attr-for-selection="topic" selected="{{menuselection}}">
+        <template is="dom-repeat" items="{{topics}}">
+        <paper-item topic="A-Labs">{{item.topic}}</paper-item>
+      </template>
+      </iron-selector>
+       <iron-localstorage 
       id="nickstorage" 
       name="nick"
       value="{{nickname}}" 
@@ -87,19 +97,23 @@
       name="avatar"
       value="{{ipfsavatar}}" 
       ></iron-localstorage>
+      <div class="userzone">
+      <div class="horizontal layout center-justified flex">
+        <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" /></div>
       <paper-input value="{{nickname}}" label="your nickname"></paper-input>
       <paper-button on-click="_changenick" raised>change nickname</paper-button>
-      <img class="avatar" src="//gateway.ipfs.io/ipfs/{{avatar}}" />
+      
       <ipfs-upload id="ipfsupload" host="/ip4/109.123.70.141/tcp/5001" ipfs="{{ipfs}}" hash="{{ipfsavatar}}"></ipfs-upload>
+      </div>
       <paper-input value="{{topic}}" label="the topic"></paper-input>
-    </div>
+      <x-notification autoshow title="{{notificationbody.nick}}" delay="1000" icon="https://avatars3.githubusercontent.com/u/2879379?v=3&s=460" timeout="6000" tag="tag"><span>{{notificationbody.input}}</span></x-notification>
     </paper-header-panel>
 
     <div main class="chatcontainer">
 
       <paper-toolbar>
       <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-      <div>{{topic}}</div>
+      <div>#<span>{{menuselection}}</span></div>
       </paper-toolbar>
 
       <div class="messages" id="msgbox">
@@ -125,6 +139,9 @@
   </div>
     
   </paper-drawer-panel>
+
+  <!-- -->
+    </div>
 </template>
 
 
@@ -177,6 +194,10 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
           topic: {
             type: String,
             value: "De A-labs fluisteraars"
+          },
+          topics: {
+            type: Array,
+            value: [{'startdate': 123123123, 'topic': 'a-labs', 'lastmsg': 123456, 'image': 'ipfshash' },{'startdate': 123123123, 'topic': 'paerenclub', 'lastmsg': 123456, 'image': 'ipfshash' },{'startdate': 123123123, 'topic': 'Sponnet', 'lastmsg': 123456, 'image': 'ipfshash' }]
           },
           ipfsavatar: {
             type: Object,
@@ -231,10 +252,8 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
           });
 
           this.whisperpost('chatbot', this.nickname + ' has joined the room');
-
-
-
         },
+
         attached: function() {
           this.oldnick = this.nickname;
           setInterval(this.scrollTop, 500);

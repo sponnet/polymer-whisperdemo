@@ -206,7 +206,23 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
 
           filter.watch(function(error, result) {
             if (!error)
-              self.push('chatbox', JSON.parse(self.web3.toAscii(result.payload)));
+              // hier zouden we op een gemakkelijke manier moeten zien te weten komen wat voor berchtje het is (eg. https://, image, mp3, youtubelink) zodat we dat mooi kunnen embedden / stylen. 
+
+              var nieuwbericht = {};
+
+              if(!JSON.parse(self.web3.toAscii(result.payload)).avatar){
+                console.log("lege avatar");
+                nieuwbericht.avatar = "QmWb2eg4jz1RypMUmyTUsEpfkiQva64kVVADNfX1zcvVjx";
+              } else {
+                nieuwbericht.avatar = JSON.parse(self.web3.toAscii(result.payload)).avatar;
+              }
+              
+              nieuwbericht.input = JSON.parse(self.web3.toAscii(result.payload)).input;
+
+              nieuwbericht.nick = JSON.parse(self.web3.toAscii(result.payload)).nick;
+
+              self.push('chatbox', nieuwbericht);
+
               self.scrollTop();
               self.notificationbody = JSON.parse(self.web3.toAscii(result.payload));
               if(activewindow){
@@ -227,7 +243,7 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
         scrollTop: function(){
           var elem = document.getElementById('msgbox');
           elem.scrollTop = elem.scrollHeight;
-          console.log("Scrolling to top");
+          //console.log("Scrolling to top");
         },
 
         _changenick: function() {

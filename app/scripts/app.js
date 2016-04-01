@@ -35,6 +35,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // imports are loaded and elements have been registered
   });
 
+        var activewindow;
+
+      function onBlur() {
+  document.body.className = 'blurred';
+  activewindow = false;
+  //console.log("Blur");
+};
+function onFocus(){
+  document.body.className = 'focused';
+  activewindow = true;
+  //console.log("Focus");
+};
+
+
+  window.onfocus = onFocus;
+  window.onblur = onBlur;
+
+
  
 
 

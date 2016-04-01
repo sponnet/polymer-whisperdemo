@@ -164,24 +164,7 @@
     (function() {
       'use strict';
 
-      var activewindow;
 
-      function onBlur() {
-  document.body.className = 'blurred';
-  activewindow = false;
-};
-function onFocus(){
-  document.body.className = 'focused';
-  activewindow = true;
-};
-
-if (/*@cc_on!@*/false) { // check for Internet Explorer
-  document.onfocusin = onFocus;
-  document.onfocusout = onBlur;
-} else {
-  window.onfocus = onFocus;
-  window.onblur = onBlur;
-};
 
       Polymer({
         is: 'web3-whisperclient',
@@ -260,7 +243,7 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
 
               self.scrollTop();
               self.notificationbody = JSON.parse(self.web3.toAscii(result.payload));
-              if(activewindow){
+              if(document.getElementById("app").activewindow){
                 document.querySelector('x-notification').show();
               }
           });

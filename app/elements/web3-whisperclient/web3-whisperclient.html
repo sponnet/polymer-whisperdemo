@@ -270,8 +270,8 @@ if (/*@cc_on!@*/false) { // check for Internet Explorer
 
         attached: function() {
           this.oldnick = this.nickname;
-          setInterval(this.scrollTop, 500);
-          setInterval(this.botPost.bind(this), 60000);
+          setInterval(this.scrollTop, 50);
+          //setInterval(this.botPost.bind(this), 60000);
         },
 
         botPost: function(){
